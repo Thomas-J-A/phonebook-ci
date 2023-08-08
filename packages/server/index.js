@@ -1,26 +1,26 @@
-const express = require("express");
-const logger = require("morgan");
-const cors = require("cors");
+const express = require('express');
+const logger = require('morgan');
+const cors = require('cors');
 
 // Import and setup env variables from .env file
-require("dotenv").config();
+require('dotenv').config();
 
-const Person = require("./models/person");
+const Person = require('./models/person');
 
 const app = express();
 const { PORT } = process.env;
 const logFormatStr =
-  ":method :url :status :res[content-length] - :response-time ms :body";
+  ':method :url :status :res[content-length] - :response-time ms :body';
 
 // Create custom body token for morgan
-logger.token("body", (req) => JSON.stringify(req.body));
+logger.token('body', (req) => JSON.stringify(req.body));
 
 app.use(logger(logFormatStr));
-app.use(express.static("dist"));
+app.use(express.static('dist'));
 app.use(express.json());
 app.use(cors());
 
-app.get("/info", (req, res, next) => {
+app.get('/info', (req, res, next) => {
   const requestTime = new Date();
 
   Person.countDocuments({})
@@ -28,8 +28,8 @@ app.get("/info", (req, res, next) => {
       const html = `
         <div>
           <p>Phonebook currently has ${count} ${
-        count === 1 ? "entry" : "entries"
-      }.</p>
+            count === 1 ? 'entry' : 'entries'
+          }.</p>
           <p>Request received: ${requestTime}</p>
         </div>
       `;
@@ -39,23 +39,23 @@ app.get("/info", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/persons", (req, res) => {
+app.get('/api/persons', (req, res) => {
   Person.find({}).then((persons) => res.status(200).json(persons));
 });
 
-app.post("/api/persons", (req, res, next) => {
+app.post('/api/persons', (req, res, next) => {
   const { body } = req;
 
   // Check that name and number fields were sent in request
   if (!body.name) {
     return res.status(400).json({
-      error: "Name field missing",
+      error: 'Name field missing',
     });
   }
 
   if (!body.number) {
     return res.status(400).json({
-      error: "Number field missing",
+      error: 'Number field missing',
     });
   }
 
@@ -78,7 +78,7 @@ app.post("/api/persons", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/api/persons/:id", (req, res, next) => {
+app.get('/api/persons/:id', (req, res, next) => {
   const { id } = req.params;
 
   Person.findById(id)
@@ -94,27 +94,27 @@ app.get("/api/persons/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.put("/api/persons/:id", (req, res, next) => {
+app.put('/api/persons/:id', (req, res, next) => {
   const { body } = req;
   const { id } = req.params;
 
   // Client must send number field
   if (!body.number) {
     return res.status(400).json({
-      error: "Number field missing",
+      error: 'Number field missing',
     });
   }
 
   return Person.findByIdAndUpdate(
     id,
     { number: body.number },
-    { new: true, runValidators: true, context: "query" }
+    { new: true, runValidators: true, context: 'query' },
   )
     .then((updatedPerson) => res.status(200).json(updatedPerson))
     .catch((err) => next(err));
 });
 
-app.delete("/api/persons/:id", (req, res, next) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
     .then(() => res.status(204).end())
     .catch((err) => next(err));
@@ -123,16 +123,16 @@ app.delete("/api/persons/:id", (req, res, next) => {
 app.use((err, req, res, next) => {
   console.log(err);
 
-  if (err.name === "CastError") {
-    return res.status(400).json({ error: "Malformatted id" });
+  if (err.name === 'CastError') {
+    return res.status(400).json({ error: 'Malformatted id' });
   }
 
-  if (err.name === "ValidationError") {
+  if (err.name === 'ValidationError') {
     return res.status(400).json({ error: err.message });
   }
 
   // Any other types of errors get generic response
-  return res.status(500).json({ error: "Something went wrong" });
+  return res.status(500).json({ error: 'Something went wrong' });
 });
 
 app.listen(PORT, () => {
