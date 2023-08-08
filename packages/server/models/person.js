@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const url = process.env.MONGODB_URI;
 
@@ -6,21 +6,21 @@ const url = process.env.MONGODB_URI;
 mongoose
   .connect(url)
   .then(() => {
-    console.log("Connected to MongoDB");
+    console.log('Connected to MongoDB');
   })
   .catch((err) => {
-    console.log("Error connecting to MongoDB:", err.message);
+    console.log('Error connecting to MongoDB:', err.message);
   });
 
 // Create a Person schema
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
-    minLength: [3, "{PATH} must be at least 3 characters"],
+    minLength: [3, '{PATH} must be at least 3 characters'],
   },
   number: {
     type: String,
-    minLength: [8, "{PATH} must be at least 8 digits"],
+    minLength: [8, '{PATH} must be at least 8 digits'],
     validate: {
       validator: (val) => /^\d{2,3}-\d+$/.test(val),
       message: (props) => `${props.value} is not a valid number`,
@@ -29,7 +29,8 @@ const personSchema = new mongoose.Schema({
 });
 
 // Modify data when it is sent back to client
-personSchema.set("toJSON", {
+/* eslint-disable no-param-reassign */
+personSchema.set('toJSON', {
   transform: (doc, ret) => {
     ret.id = ret._id.toString();
     delete ret._id;
@@ -37,4 +38,4 @@ personSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Person", personSchema);
+module.exports = mongoose.model('Person', personSchema);
