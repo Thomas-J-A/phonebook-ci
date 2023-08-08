@@ -12,7 +12,7 @@ on:
       - synchronize
 
 jobs:
-  test_client:
+  build_lint_client:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Lint
         run: npm run lint
-  test_server:
+  lint_server:
     runs-on: ubuntu-latest
     defaults:
       run:
